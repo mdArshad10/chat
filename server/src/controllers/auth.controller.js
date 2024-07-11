@@ -2,16 +2,17 @@ import { User } from "../models/User.js";
 import { AsyncHandler } from "../middlewares/AsyncHandler.js";
 import { ErrorHandler } from "../utils/error.js";
 
+// cookie options
+const cookieOptions = {
+  maxAge: 1000 * 60 * 60 * 24 * 3,
+  secure: true,
+  sameSite: "None",
+};
+
 // @DESC: create a new user
 // @METHOD: [POST]      api/v1/signup
 // @ACCESS: public
-
-const cookie = {
-  maxAge:,
-
-}
-
-const signUp = AsyncHandler(async (req, res, next) => {
+const signupUser = AsyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
   if (!email || !password) {
     return next(new ErrorHandler("plz fill all the felid", 400));
@@ -28,10 +29,46 @@ const signUp = AsyncHandler(async (req, res, next) => {
 
   const token = await user.generateToken();
 
-  res.cookie('token', token, ).status(200).json({
+  res
+    .cookie("token", token, cookieOptions)
+    .status(200)
+    .json({
+      success: true,
+      message: "User registered successfully",
+      user: {
+        id: user._id,
+        email: user.email,
+        name: user.name,
+        profileSetup: user.profileSetup,
+      },
+    });
+});
+
+// // @DESC: login the user
+// @METHOD: [POST]      api/v1/login
+// @ACCESS: public
+const loginUser = AsyncHandler(async (req, res, next) => {
+  const { email, password } = req.body;
+  if (!email || !password) {
+    return next(new ErrorHandler("plz fill all the felid", 400));
+  }
+  const user = await User.findOne({ email });
+  if (!user) {
+    return next(new ErrorHandler("Invalid email", 404));
+  }
+  const isPasswordMatch = await user.getPassword(password);
+
+  if (!isPasswordMatch) {
+    return next(new ErrorHandler("Invalid password", 404));
+  }
+
+  const token = await user.generateToken();
+
+  res.cookie("token", token, cookieOptions).status(200).json({
     success: true,
-    message: "User registered successfully",
+    message: "User login successfully",
+    user,
   });
 });
 
-export { signUp };
+export { signupUser, loginUser };
