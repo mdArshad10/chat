@@ -44,7 +44,7 @@ const signupUser = AsyncHandler(async (req, res, next) => {
     });
 });
 
-// // @DESC: login the user
+// @DESC: login the user
 // @METHOD: [POST]      api/v1/login
 // @ACCESS: public
 const loginUser = AsyncHandler(async (req, res, next) => {
@@ -71,4 +71,68 @@ const loginUser = AsyncHandler(async (req, res, next) => {
   });
 });
 
-export { signupUser, loginUser };
+// @DESC: logout the user
+// @METHOD: [POST]      api/v1/logout
+// @ACCESS: private
+const logOutUser = AsyncHandler(async (req, res, next) => {
+  res.cookie("token", "", cookieOptions).status(200).json({
+    success: true,
+    message: "User logged out successfully",
+    user: null,
+  });
+});
+
+// @DESC: get loggedIn user details
+// @METHOD: [GET]      api/v1/user-info
+// @ACCESS: private
+const getUserInfo = AsyncHandler(async (req, res, next) => {
+  const user = await User.findById(req.user.id);
+  if (!user) {
+    return next(new ErrorHandler("User not found", 404));
+  }
+  res.status(200).json({
+    success: true,
+    message: "get User details",
+    user,
+  });
+});
+
+// @DESC: update the loggedIn user details
+// @METHOD: [PUT]      api/v1/update-profile
+// @ACCESS: private
+const updateProfile = AsyncHandler(async (req, res, next) => {
+  res.status(200).json({
+    success: true,
+    message: "Profile updated successfully",
+  });
+});
+
+// @DESC: add the profile pic into loggedIn user
+// @METHOD: [POST]      api/v1/add-profile-image
+// @ACCESS: private
+const addProfileImage = AsyncHandler(async (req, res, next) => {
+  res.status(200).json({
+    success: true,
+    message: "Profile image added successfully",
+  });
+});
+
+// @DESC: get loggedIn user details
+// @METHOD: [DELETE]      api/v1/remove-profile-image
+// @ACCESS: private
+const removeProfileImage = AsyncHandler(async (req, res, next) => {
+  res.status(200).json({
+    success: true,
+    message: "Profile image removed successfully",
+  });
+});
+
+export {
+  signupUser,
+  loginUser,
+  getUserInfo,
+  logOutUser,
+  updateProfile,
+  addProfileImage,
+  removeProfileImage,
+};

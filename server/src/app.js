@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import { errorMiddleware } from "./middlewares/Error.middleware.js";
 
 import authRouter from "./routes/auth.route.js";
+import contactRouter from "./routes/contact.route.js";
 
 const app = express();
 
@@ -24,7 +25,10 @@ app.use(
 );
 
 app.use("/api/v1", authRouter);
+app.use("/api/v1", contactRouter);
+
 app.use(errorMiddleware);
+
 app.use("*", (req, res, next) => {
   res.status(404).json({
     success: true,
