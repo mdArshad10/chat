@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { basicApi } from "../apiService.js";
 import {
   allUser,
@@ -18,6 +19,18 @@ export const userApi = basicApi.injectEndpoints({
         method: "GET",
       }),
     }),
+    getProfileDetail: build.query({
+      query: () => ({
+        url: `/${userInfo}`,
+        method: "GET",
+        headers: {
+          "content-type": "application/json",
+          headers: {
+            authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        },
+      }),
+    }),
     signup: build.mutation({
       query: (data) => ({
         url: `/${signup}`,
@@ -35,4 +48,9 @@ export const userApi = basicApi.injectEndpoints({
   }),
 });
 
-export const { useLoginMutation, useSignupMutation, useAllUserQuery } = userApi;
+export const {
+  useLoginMutation,
+  useSignupMutation,
+  useAllUserQuery,
+  useGetProfileDetailQuery,
+} = userApi;

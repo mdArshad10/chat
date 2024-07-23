@@ -1,5 +1,11 @@
+import { useGetProfileDetailQuery } from "@/store/services/userServiceApi";
+
 const Profile = () => {
-  return <div>Profile</div>;
+
+  console.log(resp);
+  return<>
+    <h1>This is the profile page of user</h1>
+  </>;
 };
 
 export default Profile;
