@@ -7,10 +7,10 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/auth" element={<Auth />} />
+        <Route path="/" element={<Auth />} />
         <Route path="/chat" element={<Chat />} />
         <Route path="/profile" element={<Profile />} />
-        <Route path="*" element={<Navigate to={<Auth />} />} />
+        <Route path="*" element={<Navigate to='/' replace={true} />} />
       </Routes>
     </BrowserRouter>
   );
