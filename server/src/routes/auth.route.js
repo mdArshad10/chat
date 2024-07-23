@@ -7,15 +7,18 @@ import {
   updateProfile,
   addProfileImage,
   removeProfileImage,
+  getAllUsers,
 } from "../controllers/auth.controller.js";
 import { ProtectedUser } from "../middlewares/verify.js";
 import { upload } from "../utils/multer.js";
 
 const router = express.Router();
 
-router.route("/signup").post(signupUser);
-router.route("/login").post(loginUser);
-router.route("/logout").post(ProtectedUser, logOutUser);
+router.route('/all').get(getAllUsers);
+
+router.route("/sign-up").post(signupUser);
+router.route("/log-in").post(loginUser);
+router.route("/log-out").post(ProtectedUser, logOutUser);
 router.route("/user-info").get(ProtectedUser, getUserInfo);
 router.route("/update-profile").put(ProtectedUser, updateProfile);
 router.route("/add-profile-image").post(ProtectedUser, addProfileImage);

@@ -1,5 +1,6 @@
 import { Schema, model } from "mongoose";
 import bcryptjs from "bcryptjs";
+import { jwtSecret } from "../constant.js";
 import Joi from "joi";
 import jwt from "jsonwebtoken";
 
@@ -16,11 +17,9 @@ const userSchema = new Schema(
     },
     firstName: {
       type: String,
-      required: true,
     },
     lastName: {
       type: String,
-      required: true,
     },
     image: {
       public_id: String,
@@ -28,7 +27,6 @@ const userSchema = new Schema(
     },
     color: {
       type: Number,
-      required: false,
     },
     profileSetup: {
       type: Boolean,
@@ -39,8 +37,8 @@ const userSchema = new Schema(
 );
 
 // middleware to save the password into encrypt form
-userSchema.pre("save", async function () {
-  if (!userSchema.isModified("password")) return;
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return;
   this.password = await bcryptjs.hash(this.password, 10);
   next();
 });
@@ -52,14 +50,9 @@ userSchema.methods.getPassword = async function (enteredPassword) {
 
 // generate the token
 userSchema.methods.generateToken = async function () {
-  return await jwt.sign(
-    { id: this._id, email: this.email },
-    process.env.TOKEN_SECRET_KEY,
-    {
-      expiresIn: "1d",
-      maxAge: 1000 * 60 * 60 * 24 * 3,
-    }
-  );
+  return await jwt.sign({ id: this._id, email: this.email }, jwtSecret, {
+    expiresIn: "1d",
+  });
 };
 
 export const User = model("User", userSchema);

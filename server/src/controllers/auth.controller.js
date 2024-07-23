@@ -7,7 +7,21 @@ const cookieOptions = {
   maxAge: 1000 * 60 * 60 * 24 * 3,
   secure: true,
   sameSite: "None",
+  httpOnly: true,
 };
+
+// TODO: for testing the get in frontend
+// @DESC: get all users
+// @METHOD: [GET]      api/v1/all
+// @ACCESS: public
+const getAllUsers = AsyncHandler(async (req, res, next) => {
+  const users = await User.find();
+  res.cookie("token", "this is for token", cookieOptions).status(200).json({
+    success: true,
+    message: "get all users",
+    data: users,
+  });
+});
 
 // @DESC: create a new user
 // @METHOD: [POST]      api/v1/signup
@@ -17,7 +31,7 @@ const signupUser = AsyncHandler(async (req, res, next) => {
   if (!email || !password) {
     return next(new ErrorHandler("plz fill all the felid", 400));
   }
-  const existUser = await User.find({ email });
+  const existUser = await User.findOne({ email });
   if (existUser) {
     return next(new ErrorHandler("user already exist", 400));
   }
@@ -35,7 +49,7 @@ const signupUser = AsyncHandler(async (req, res, next) => {
     .json({
       success: true,
       message: "User registered successfully",
-      user: {
+      data: {
         id: user._id,
         email: user.email,
         name: user.name,
@@ -64,10 +78,12 @@ const loginUser = AsyncHandler(async (req, res, next) => {
 
   const token = await user.generateToken();
 
+  const userWithOutPassword = await User.findById(user._id).select("-password");
+
   res.cookie("token", token, cookieOptions).status(200).json({
     success: true,
     message: "User login successfully",
-    user,
+    data: userWithOutPassword,
   });
 });
 
@@ -129,6 +145,7 @@ const removeProfileImage = AsyncHandler(async (req, res, next) => {
 
 export {
   signupUser,
+  getAllUsers,
   loginUser,
   getUserInfo,
   logOutUser,
