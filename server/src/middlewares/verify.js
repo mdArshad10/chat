@@ -5,7 +5,9 @@ import { jwtSecret } from "../constant.js";
 import { User } from "../models/User.js";
 
 const ProtectedUser = async (req, res, next) => {
-  const token = req.cookies?.token || req.headers?.authorization?.token;
+  const token =
+    req.cookies?.token || req.headers["authorization"].split(" ")[1];
+
   if (!token) {
     return next(new ErrorHandler("Token not provided", 404));
   }

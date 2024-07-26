@@ -10,6 +10,7 @@ const setupSocket = (server) => {
   });
 
   // why we use the map datatype
+  // to store the userId and socketInstance
   const userSocketMap = new Map();
 
   const disconnect = (server) => {
